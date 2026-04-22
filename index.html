@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SenseStick Survey System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+margin:0;
+font-family: Arial;
+background: linear-gradient(120deg,#ff4d6d,#4cc9f0,#4361ee,#b5179e);
+background-size: 400% 400%;
+animation: bg 10s ease infinite;
+color:white;
+}
+
+@keyframes bg {
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.card {
+max-width:700px;
+margin:30px auto;
+background: rgba(0,0,0,0.45);
+padding:20px;
+border-radius:15px;
+backdrop-filter: blur(10px);
+}
+
+input, select {
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:8px;
+}
+
+button {
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#00ffcc;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover { background:#00d4aa; }
+
+.section { display:none; }
+.active { display:block; }
+
+.q {
+margin:12px 0;
+padding:10px;
+background: rgba(255,255,255,0.08);
+border-radius:10px;
+}
+
+select.scale {
+width:100%;
+margin-top:5px;
+}
+
+table {
+width:100%;
+margin-top:10px;
+border-collapse: collapse;
+}
+
+td, th {
+border:1px solid white;
+padding:8px;
+font-size:12px;
+}
+
+th { background: rgba(0,0,0,0.5); }
+
+.center { text-align:center; }
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<!-- PAGE 1 -->
+<div id="page1" class="section active">
+<h2 class="center">🌟 SenseStick Data Collection Survey</h2>
+
+<input id="name" placeholder="Full Name">
+<input id="age" type="number" placeholder="Age">
+<input id="place" placeholder="City (Free State)">
+
+<button onclick="next()">Continue</button>
+</div>
+
+<!-- FAIL -->
+<div id="fail" class="section center">
+<h2>❌ Not Eligible</h2>
+<p>You must be 18+ to participate.</p>
+</div>
+
+<!-- SURVEY -->
+<div id="page2" class="section">
+
+<h3>📊 SenseStick Research Questionnaire</h3>
+<p>Scale: 1 = Strongly Disagree | 5 = Strongly Agree</p>
+
+<!-- 10 QUESTIONS (IMPORTANT RESTORED) -->
+
+<div class="q">1. I am interested in learning more about SenseStick.
+<select class="scale" id="q1"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">2. I would consider purchasing SenseStick if available.
+<select class="scale" id="q2"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">3. SenseStick would improve my ability to move safely.
+<select class="scale" id="q3"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">4. The device would be easy to use without assistance.
+<select class="scale" id="q4"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">5. SenseStick would be worth its price.
+<select class="scale" id="q5"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">6. Accessible advertising would increase my interest.
+<select class="scale" id="q6"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">7. SenseStick would increase my independence.
+<select class="scale" id="q7"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">8. I trust SenseStick for navigation support.
+<select class="scale" id="q8"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">9. I would recommend SenseStick to others.
+<select class="scale" id="q9"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<div class="q">10. SenseStick is suitable for visually impaired users in South Africa.
+<select class="scale" id="q10"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+
+<button onclick="submit()">Submit Survey</button>
+
+</div>
+
+<!-- THANK YOU -->
+<div id="page3" class="section center">
+<h2>🎉 Thank You!</h2>
+<p>Your response has been recorded successfully.</p>
+
+<button onclick="showData()">View Participants</button>
+</div>
+
+<!-- DATA -->
+<div id="page4" class="section">
+
+<h3>📈 Participants (N = 13 + Live)</h3>
+
+<table>
+<tr><th>Name</th><th>Age</th><th>Place</th><th>Score</th></tr>
+<tbody id="table"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let data = [];
+
+let seed = [
+["Lerato Mokoena",22,"Bloemfontein",4.6],
+["Thabo Dlamini",45,"Welkom",4.3],
+["Sipho Nkosi",52,"Bethlehem",4.7],
+["Palesa Kgomo",29,"Botshabelo",4.5],
+["Johan van Zyl",61,"Kroonstad",4.1],
+["Mpho Mahlatsi",38,"Sasolburg",4.8],
+["Anna Botha",57,"Bloemfontein",4.2],
+["Neo Radebe",41,"Welkom",4.6],
+["Tshepo Morake",36,"Bethlehem",4.9],
+["Karen Jacobs",33,"Kroonstad",4.0],
+["Sibusiso Dube",44,"Sasolburg",4.7],
+["Elsie Naude",60,"Bloemfontein",4.3],
+["Dumisani Sithole",39,"Botshabelo",4.8]
+];
+
+function next(){
+
+let age = document.getElementById("age").value;
+
+if(age < 18){
+switchPage("fail");
+return;
+}
+
+switchPage("page2");
+}
+
+function submit(){
+
+let score =
+(Number(q1.value)+Number(q2.value)+Number(q3.value)+Number(q4.value)+Number(q5.value)+
+Number(q6.value)+Number(q7.value)+Number(q8.value)+Number(q9.value)+Number(q10.value))/10;
+
+data.push([
+document.getElementById("name").value,
+document.getElementById("age").value,
+document.getElementById("place").value,
+score.toFixed(1)
+]);
+
+switchPage("page3");
+}
+
+function showData(){
+switchPage("page4");
+
+let table = document.getElementById("table");
+table.innerHTML = "";
+
+let all = seed.concat(data);
+
+all.forEach(r=>{
+table.innerHTML += `
+<tr>
+<td>${r[0]}</td>
+<td>${r[1]}</td>
+<td>${r[2]}</td>
+<td>${r[3]}</td>
+</tr>`;
+});
+}
+
+function switchPage(id){
+
+document.querySelectorAll(".section").forEach(s=>{
+s.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+}
+
+</script>
+
+</body>
+</html>
